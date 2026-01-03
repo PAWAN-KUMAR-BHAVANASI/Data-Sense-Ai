@@ -1,12 +1,39 @@
-<div align="center">
-<img width="1200" height="475" alt="GHBanner" src="https://github.com/user-attachments/assets/0aa67016-6eaf-458a-adb2-6e31a0763ed6" />
-</div>
+# 📊 DataSense AI  
+**AI-Powered Data Analytics & Dashboard Platform**
 
-# Run and deploy your AI Studio app
+DataSense AI is an intelligent data analytics tool that enables users to analyze datasets using **natural language queries** and generate **clear insights, visualizations, and dashboards** powered by **Generative AI (Gemini)**.
 
-This contains everything you need to run your app locally.
+---
 
-View your app in AI Studio: https://ai.studio/apps/drive/1H07B21A9q6QLFmeUOfUDnSruSTEp0sme
+## 🚀 Features
+
+- 📁 Upload datasets (CSV / Excel)
+- 💬 Ask questions in plain English
+- 🤖 AI-powered data analysis using **Google Gemini**
+- 📊 Automatic data visualizations (charts & dashboards)
+- 🧠 Business-friendly insights and summaries
+- 🎨 Clean, modern, SaaS-style UI
+- 🔐 Secure API key handling
+- 📈 Power BI dashboard integration (optional)
+
+---
+
+## 🧠 Tech Stack
+
+- **AI Model:** Google Gemini (via Google AI Studio API)
+- **Frontend:** Streamlit
+- **Backend Logic:** Python
+- **Data Handling:** Pandas, NumPy
+- **Visualization:** Plotly / Matplotlib
+- **Dashboards:** Power BI (embedded)
+- **Version Control:** Git & GitHub
+- **Deployment:** Streamlit Cloud / Google Cloud Run
+
+---
+
+## 🏗️ Architecture Overview
+
+
 
 ## Run Locally
 
