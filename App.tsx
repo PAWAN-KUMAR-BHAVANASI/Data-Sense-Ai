@@ -1,5 +1,5 @@
 
-import React, { useState, useCallback } from 'react';
+import React, { useState, useCallback, useEffect } from 'react';
 import { Sidebar } from './components/Sidebar';
 import { Dashboard } from './components/Dashboard';
 import { FileUpload } from './components/FileUpload';
@@ -7,7 +7,7 @@ import { ChatInterface } from './components/ChatInterface';
 import { GuideSection } from './components/GuideSection';
 import { Logo } from './components/Logo';
 import { SchemaInfo, DataRow, ChatMessage, SavedInsight, PALETTES, ColorPalette } from './types';
-import { Database, Settings, Palette } from 'lucide-react';
+import { Database, Settings, Palette, Moon, Sun } from 'lucide-react';
 
 const App: React.FC = () => {
   const [data, setData] = useState<DataRow[] | null>(null);
@@ -18,6 +18,19 @@ const App: React.FC = () => {
   const [currentPalette, setCurrentPalette] = useState<ColorPalette>(PALETTES[0]);
   const [showPalettePicker, setShowPalettePicker] = useState(false);
   const [pendingQuery, setPendingQuery] = useState<string | null>(null);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(() => {
+    const saved = localStorage.getItem('datasense-dark-mode');
+    return saved ? JSON.parse(saved) : false;
+  });
+
+  useEffect(() => {
+    localStorage.setItem('datasense-dark-mode', JSON.stringify(isDarkMode));
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [isDarkMode]);
 
   const handleDataLoaded = useCallback((rawData: DataRow[], schemaInfo: SchemaInfo) => {
     setData(rawData);
@@ -55,50 +68,59 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className="flex h-screen bg-[#f8fafc] overflow-hidden">
+    <div className={`flex h-screen ${isDarkMode ? 'dark bg-slate-950' : 'bg-[#f8fafc]'} overflow-hidden transition-colors duration-200`}>
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
         hasData={!!data}
         resetData={resetData}
         palette={currentPalette}
+        isDarkMode={isDarkMode}
       />
 
       <main className="flex-1 flex flex-col overflow-hidden">
-        <header className="h-20 border-b border-slate-200/60 bg-white/80 backdrop-blur-md flex items-center justify-between px-10 shrink-0 z-20">
+        <header className={`h-20 border-b ${isDarkMode ? 'border-slate-700/50 bg-slate-900/80' : 'border-slate-200/60 bg-white/80'} backdrop-blur-md flex items-center justify-between px-10 shrink-0 z-20 transition-colors duration-200`}>
           <div className="flex items-center gap-4 group cursor-pointer" onClick={() => setActiveTab('upload')}>
             <Logo className="w-12 h-12 transition-transform duration-500 group-hover:scale-110" />
             <div>
-              <h1 className="text-2xl font-black text-slate-900 tracking-tight leading-none">DataSense <span className="sense-text-gradient">AI</span></h1>
-              <p className="text-[9px] text-slate-400 font-black uppercase tracking-[0.3em] mt-1">Intelligence Refined</p>
+              <h1 className={`text-2xl font-black tracking-tight leading-none ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>DataSense <span className="sense-text-gradient">AI</span></h1>
+              <p className={`text-[9px] font-black uppercase tracking-[0.3em] mt-1 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Intelligence Refined</p>
             </div>
           </div>
           <div className="flex items-center gap-6">
              {schema && (
-               <div className="px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-xs font-bold flex items-center gap-2 border border-blue-100/50 shadow-sm">
+               <div className={`px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border shadow-sm transition-colors ${isDarkMode ? 'bg-blue-900/30 text-blue-300 border-blue-700/50' : 'bg-blue-50 text-blue-700 border-blue-100/50'}`}>
                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
                  {schema.totalRows.toLocaleString()} Records Active
                </div>
              )}
              
-             <div className="h-6 w-px bg-slate-200"></div>
+             <div className={`h-6 w-px ${isDarkMode ? 'bg-slate-700' : 'bg-slate-200'}`}></div>
+
+             <button
+               onClick={() => setIsDarkMode(!isDarkMode)}
+               className={`p-2.5 rounded-xl transition-all border border-transparent ${isDarkMode ? 'hover:bg-slate-800 text-slate-300 hover:text-white' : 'hover:bg-slate-50 text-slate-400 hover:text-slate-600 hover:border-slate-100'}`}
+               title={isDarkMode ? 'Light Mode' : 'Dark Mode'}
+             >
+               {isDarkMode ? <Sun className="w-5 h-5" /> : <Moon className="w-5 h-5" />}
+             </button>
 
              <div className="relative">
                <button 
                 onClick={() => setShowPalettePicker(!showPalettePicker)}
-                className="flex items-center gap-2.5 px-3 py-2 hover:bg-slate-50 rounded-xl transition-all text-slate-600 border border-transparent hover:border-slate-100"
+                className={`flex items-center gap-2.5 px-3 py-2 rounded-xl transition-all border border-transparent ${isDarkMode ? 'hover:bg-slate-800 text-slate-300 hover:border-slate-700' : 'hover:bg-slate-50 text-slate-600 hover:border-slate-100'}`}
                >
                   <Palette className="w-5 h-5" />
                   <span className="text-sm font-semibold">{currentPalette.name}</span>
                </button>
                {showPalettePicker && (
-                 <div className="absolute right-0 mt-3 w-56 bg-white rounded-2xl shadow-2xl border border-slate-100 p-2 z-50 ring-4 ring-slate-900/5">
-                   <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest p-3">Style Engine</p>
+                 <div className={`absolute right-0 mt-3 w-56 rounded-2xl shadow-2xl border p-2 z-50 ring-4 transition-colors ${isDarkMode ? 'bg-slate-800 border-slate-700 ring-slate-900/50' : 'bg-white border-slate-100 ring-slate-900/5'}`}>
+                   <p className={`text-[10px] font-black uppercase tracking-widest p-3 ${isDarkMode ? 'text-slate-500' : 'text-slate-400'}`}>Style Engine</p>
                    {PALETTES.map(p => (
                      <button
                        key={p.name}
                        onClick={() => { setCurrentPalette(p); setShowPalettePicker(false); }}
-                       className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${currentPalette.name === p.name ? 'bg-blue-50 text-blue-700 font-bold' : 'hover:bg-slate-50 text-slate-600 font-medium'}`}
+                       className={`w-full flex items-center gap-3 p-3 rounded-xl transition-all ${currentPalette.name === p.name ? isDarkMode ? 'bg-blue-900/40 text-blue-300 font-bold' : 'bg-blue-50 text-blue-700 font-bold' : isDarkMode ? 'hover:bg-slate-700 text-slate-300 font-medium' : 'hover:bg-slate-50 text-slate-600 font-medium'}`}
                      >
                        <div className="flex -space-x-1.5">
                          {p.colors.slice(0, 3).map((c, i) => (
@@ -112,13 +134,13 @@ const App: React.FC = () => {
                )}
              </div>
 
-             <button className="p-2.5 hover:bg-slate-50 rounded-xl transition-all text-slate-400 hover:text-slate-600 border border-transparent hover:border-slate-100">
+             <button className={`p-2.5 rounded-xl transition-all border border-transparent ${isDarkMode ? 'hover:bg-slate-800 text-slate-400 hover:text-slate-300 hover:border-slate-700' : 'hover:bg-slate-50 text-slate-400 hover:text-slate-600 hover:border-slate-100'}`}>
                 <Settings className="w-5 h-5" />
              </button>
           </div>
         </header>
 
-        <div className="flex-1 overflow-y-auto bg-[#f8fafc]">
+        <div className={`flex-1 overflow-y-auto ${isDarkMode ? 'bg-slate-900' : 'bg-[#f8fafc]'} transition-colors duration-200`}>
           <div className="max-w-[1600px] mx-auto h-full p-8 md:p-12">
             {activeTab === 'upload' && !data && (
               <FileUpload onDataLoaded={handleDataLoaded} />
@@ -133,6 +155,7 @@ const App: React.FC = () => {
                 savedInsights={savedInsights}
                 onRemoveInsight={onRemoveInsight}
                 palette={currentPalette}
+                isDarkMode={isDarkMode}
               />
             )}
 

@@ -13,9 +13,13 @@
         ::-webkit-scrollbar-track { background: transparent; }
         ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 10px; }
         ::-webkit-scrollbar-thumb:hover { background: #94a3b8; }
+        .dark ::-webkit-scrollbar-thumb { background: #475569; }
+        .dark ::-webkit-scrollbar-thumb:hover { background: #64748b; }
         .glass { background: rgba(255, 255, 255, 0.7); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); border: 1px solid rgba(255, 255, 255, 0.3); }
+        .dark .glass { background: rgba(15, 23, 42, 0.7); border: 1px solid rgba(148, 163, 184, 0.2); }
         .sense-gradient { background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); }
         .sense-text-gradient { background: linear-gradient(135deg, #00d2ff 0%, #3a7bd5 100%); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        html.dark { color-scheme: dark; }
     </style>
 </head>
 <body class="bg-[#f8fafc] text-slate-900">

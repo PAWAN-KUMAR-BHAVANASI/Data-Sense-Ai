@@ -5,10 +5,11 @@ import {
   TrendingUp, Users, DollarSign, Activity, FileText, ChevronRight, Layout, Trash2, 
   Calendar, ShieldCheck, BarChart3, Info, Lightbulb, Wand2, ArrowRight, Settings2,
   Filter, X, MousePointer2, Clock, Globe, BarChart, Table as TableIcon, PieChart,
-  HelpCircle, MoreHorizontal, Search
+  HelpCircle, MoreHorizontal, Search, Download
 } from 'lucide-react';
 import { ChartRenderer } from './ChartRenderer';
 import { SeabornDashboard } from './SeabornDashboard';
+import { ExportModal } from './ExportModal';
 
 interface DashboardProps {
   data: DataRow[];
@@ -18,13 +19,15 @@ interface DashboardProps {
   savedInsights: SavedInsight[];
   onRemoveInsight: (id: string) => void;
   palette: ColorPalette;
+  isDarkMode?: boolean;
 }
 
-export const Dashboard: React.FC<DashboardProps> = ({ data, schema, onSwitchToChat, triggerChatQuery, savedInsights, onRemoveInsight, palette }) => {
+export const Dashboard: React.FC<DashboardProps> = ({ data, schema, onSwitchToChat, triggerChatQuery, savedInsights, onRemoveInsight, palette, isDarkMode = false }) => {
   const [activeSubTab, setActiveSubTab] = useState<'overview' | 'explorer' | 'seaborn'>('overview');
   const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
+  const [showExportModal, setShowExportModal] = useState(false);
   
   // Slicers / Filters State
   const [filters, setFilters] = useState<Record<string, string>>({});
@@ -173,24 +176,32 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, schema, onSwitchToCh
       )}
 
       {/* Tabs */}
-      <div className="flex bg-slate-200/50 p-1.5 rounded-[20px] w-fit flex-wrap">
-        <button 
-          onClick={() => setActiveSubTab('overview')}
-          className={`px-6 py-2.5 rounded-[14px] text-sm font-black transition-all flex items-center gap-2 ${activeSubTab === 'overview' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+      <div className="flex items-center gap-4 flex-wrap">
+        <div className="flex bg-slate-200/50 p-1.5 rounded-[20px] w-fit flex-wrap">
+          <button 
+            onClick={() => setActiveSubTab('overview')}
+            className={`px-6 py-2.5 rounded-[14px] text-sm font-black transition-all flex items-center gap-2 ${activeSubTab === 'overview' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            <BarChart className="w-4 h-4" /> Report Canvas
+          </button>
+          <button 
+            onClick={() => setActiveSubTab('explorer')}
+            className={`px-6 py-2.5 rounded-[14px] text-sm font-black transition-all flex items-center gap-2 ${activeSubTab === 'explorer' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            <TableIcon className="w-4 h-4" /> Data Matrix
+          </button>
+          <button 
+            onClick={() => setActiveSubTab('seaborn')}
+            className={`px-6 py-2.5 rounded-[14px] text-sm font-black transition-all flex items-center gap-2 ${activeSubTab === 'seaborn' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+          >
+            <BarChart3 className="w-4 h-4" /> Seaborn Stats
+          </button>
+        </div>
+        <button
+          onClick={() => setShowExportModal(true)}
+          className="px-4 py-2.5 rounded-[14px] text-sm font-black bg-green-600 text-white hover:bg-green-700 transition-all flex items-center gap-2 shadow-sm"
         >
-          <BarChart className="w-4 h-4" /> Report Canvas
-        </button>
-        <button 
-          onClick={() => setActiveSubTab('explorer')}
-          className={`px-6 py-2.5 rounded-[14px] text-sm font-black transition-all flex items-center gap-2 ${activeSubTab === 'explorer' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-        >
-          <TableIcon className="w-4 h-4" /> Data Matrix
-        </button>
-        <button 
-          onClick={() => setActiveSubTab('seaborn')}
-          className={`px-6 py-2.5 rounded-[14px] text-sm font-black transition-all flex items-center gap-2 ${activeSubTab === 'seaborn' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
-        >
-          <BarChart3 className="w-4 h-4" /> Seaborn Stats
+          <Download className="w-4 h-4" /> Export Data
         </button>
       </div>
 
@@ -424,9 +435,24 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, schema, onSwitchToCh
         </div>
       ) : activeSubTab === 'seaborn' ? (
         <div className="animate-in fade-in duration-500">
-          <SeabornDashboard data={filteredData} schema={schema} />
+          <SeabornDashboard data={filteredData} schema={schema} isDarkMode={isDarkMode} />
         </div>
       ) : null}
+
+      {/* Export Modal */}
+      <ExportModal
+        isOpen={showExportModal}
+        onClose={() => setShowExportModal(false)}
+        data={filteredData}
+        filename={`cleaned-data-${new Date().toISOString().split('T')[0]}`}
+        isDarkMode={isDarkMode}
+        schema={schema}
+        stats={{
+          totalRows: filteredData.length,
+          totalColumns: schema.columns.length,
+          healthScore: schema.quality?.healthScore || 0,
+        }}
+      />
     </div>
   );
 };

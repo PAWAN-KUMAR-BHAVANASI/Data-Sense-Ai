@@ -9,9 +9,10 @@ interface SidebarProps {
   hasData: boolean;
   resetData: () => void;
   palette: ColorPalette;
+  isDarkMode?: boolean;
 }
 
-export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, hasData, resetData, palette }) => {
+export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, hasData, resetData, palette, isDarkMode = false }) => {
   const mainColor = palette.colors[0];
   
   const navItems = [
@@ -22,7 +23,7 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, hasDa
   ];
 
   return (
-    <aside className="w-72 border-r border-slate-200/60 bg-white flex flex-col shrink-0">
+    <aside className={`w-72 border-r flex flex-col shrink-0 transition-colors ${isDarkMode ? 'border-slate-700/50 bg-slate-800' : 'border-slate-200/60 bg-white'}`}>
       <div className="flex-1 px-4 py-8">
         <div className="space-y-2">
           {navItems.map((item) => {
@@ -36,10 +37,10 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, hasDa
                 onClick={() => setActiveTab(item.id as any)}
                 className={`w-full group flex items-center justify-between p-4 rounded-2xl transition-all duration-300 ${
                   isActive 
-                    ? 'bg-slate-900 text-white shadow-xl shadow-slate-200' 
+                    ? isDarkMode ? 'bg-blue-900 text-white shadow-xl shadow-blue-900/30' : 'bg-slate-900 text-white shadow-xl shadow-slate-200' 
                     : isDisabled
-                    ? 'text-slate-300 cursor-not-allowed grayscale'
-                    : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
+                    ? isDarkMode ? 'text-slate-600 cursor-not-allowed grayscale' : 'text-slate-300 cursor-not-allowed grayscale'
+                    : isDarkMode ? 'text-slate-400 hover:bg-slate-700 hover:text-white' : 'text-slate-500 hover:bg-slate-50 hover:text-slate-900'
                 }`}
               >
                 <div className="flex items-center gap-4">
@@ -55,21 +56,21 @@ export const Sidebar: React.FC<SidebarProps> = ({ activeTab, setActiveTab, hasDa
         </div>
       </div>
 
-      <div className="p-6 border-t border-slate-100 mt-auto">
-        <div className="bg-slate-50 rounded-[28px] p-5 mb-8 border border-slate-100">
-          <p className="text-[10px] font-black text-slate-400 uppercase tracking-[0.2em] mb-4">Operator</p>
+      <div className={`p-6 border-t mt-auto transition-colors ${isDarkMode ? 'border-slate-700 ' : 'border-slate-100 '}`}>
+        <div className={`rounded-[28px] p-5 mb-8 border transition-colors ${isDarkMode ? 'bg-slate-700 border-slate-600' : 'bg-slate-50 border-slate-100'}`}>
+          <p className={`text-[10px] font-black uppercase tracking-[0.2em] mb-4 ${isDarkMode ? 'text-slate-400' : 'text-slate-400'}`}>Operator</p>
           <div className="flex items-center gap-3">
             <div className="w-10 h-10 rounded-2xl sense-gradient flex items-center justify-center text-white text-sm font-black shadow-lg shadow-blue-100">JD</div>
             <div>
-              <p className="text-sm font-bold text-slate-900">John Doe</p>
-              <p className="text-[10px] text-slate-500 font-semibold bg-white border border-slate-100 px-2 py-0.5 rounded-full inline-block mt-0.5">Enterprise</p>
+              <p className={`text-sm font-bold ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>John Doe</p>
+              <p className={`text-[10px] font-semibold px-2 py-0.5 rounded-full inline-block mt-0.5 transition-colors ${isDarkMode ? 'text-slate-300 bg-slate-800 border-slate-600' : 'text-slate-500 bg-white border-slate-100'} border`}>Enterprise</p>
             </div>
           </div>
         </div>
         
         <button 
           onClick={resetData}
-          className="w-full flex items-center gap-3 p-4 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-2xl transition-all font-bold text-sm"
+          className={`w-full flex items-center gap-3 p-4 rounded-2xl transition-all font-bold text-sm ${isDarkMode ? 'text-slate-400 hover:text-red-400 hover:bg-red-900/30' : 'text-slate-400 hover:text-red-600 hover:bg-red-50'}`}
         >
           <LogOut className="w-5 h-5" />
           <span>Purge Workspace</span>

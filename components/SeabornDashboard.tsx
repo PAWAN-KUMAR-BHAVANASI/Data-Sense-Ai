@@ -4,9 +4,10 @@ import { BarChart3, TrendingUp, Activity } from 'lucide-react';
 interface SeabornDashboardProps {
   data: any[];
   schema: any;
+  isDarkMode?: boolean;
 }
 
-export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema }) => {
+export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema, isDarkMode = false }) => {
   const [selectedPlot, setSelectedPlot] = useState<string>('heatmap');
   const [plots, setPlots] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<boolean>(false);
