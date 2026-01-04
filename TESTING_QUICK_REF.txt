@@ -1,0 +1,202 @@
+═══════════════════════════════════════════════════════════════════════════════
+                    🧪 LOCAL TESTING - QUICK START
+═══════════════════════════════════════════════════════════════════════════════
+
+STATUS: ✅ Ready to Test Locally
+
+═══════════════════════════════════════════════════════════════════════════════
+                        🚀 START TESTING NOW
+═══════════════════════════════════════════════════════════════════════════════
+
+ONE COMMAND (Easiest):
+    Run: .\test-local.bat
+    
+    This opens:
+    • Backend window (Flask on :5000)
+    • Frontend window (React on :5173)
+    
+    Then browser opens with your app! 🎉
+
+OR MANUAL (Two windows):
+
+Window 1 - Backend:
+    cd backend
+    python run.py
+    → Should show: "Running on http://127.0.0.1:5000"
+
+Window 2 - Frontend:
+    npm run dev
+    → Should show: "Local: http://localhost:5173"
+    → Browser auto-opens
+
+═══════════════════════════════════════════════════════════════════════════════
+                        ✅ QUICK TEST CHECKLIST
+═══════════════════════════════════════════════════════════════════════════════
+
+1️⃣  LOAD APP
+    ☐ Frontend loads at http://localhost:5173
+    ☐ No errors in browser console (F12)
+    ☐ Dashboard visible
+
+2️⃣  UPLOAD DATA
+    ☐ Click "Upload Data"
+    ☐ Select sample_data.csv (included)
+    ☐ File uploads ✓
+
+3️⃣  TEST DASHBOARD
+    ☐ Report Canvas tab - shows charts
+    ☐ Data Matrix tab - shows raw data
+    ☐ Both display correctly
+
+4️⃣  TEST SEABORN PLOTS (NEW!)
+    ☐ Click "Seaborn Stats" tab
+    ☐ Click "🔥 Heatmap" → Generates plot
+    ☐ Click "📊 Distribution" → Generates plot
+    ☐ Click "📈 Scatter" → Generates plot
+    ☐ All plots show up! ✅
+
+5️⃣  TEST AI
+    ☐ Click "Neural Chat" tab
+    ☐ Type a question
+    ☐ AI responds ✓
+
+═══════════════════════════════════════════════════════════════════════════════
+                        📊 TEST DATA PROVIDED
+═══════════════════════════════════════════════════════════════════════════════
+
+File: sample_data.csv
+Contains: 20 employee records
+
+Columns:
+    • Name (text)
+    • Age (number) ← For plotting
+    • Salary (number) ← For plotting
+    • Department (category) ← For grouping
+    • Performance_Score (number)
+    • Years_Experience (number)
+    • Bonus_Percentage (number)
+
+Perfect for testing all features!
+
+═══════════════════════════════════════════════════════════════════════════════
+                        🔍 WHAT TO LOOK FOR
+═══════════════════════════════════════════════════════════════════════════════
+
+✅ SUCCESS:
+    • App loads instantly
+    • Data uploads in <1 sec
+    • Charts render smoothly
+    • Seaborn plots generate (3-10 sec)
+    • No errors in console
+    • No errors in backend logs
+    • AI responds with insights
+
+❌ PROBLEMS:
+    • Red text in browser console → Check F12
+    • Red text in backend window → Check logs
+    • Plots not showing → Backend might be down
+    • API key error → Check .env file
+    • Port already in use → Kill other apps
+
+═══════════════════════════════════════════════════════════════════════════════
+                        ⏱️ EXPECTED TIMINGS
+═══════════════════════════════════════════════════════════════════════════════
+
+First time running:
+    • Backend startup: 10-20 sec (loads libraries)
+    • Frontend build: 30-60 sec (Vite compilation)
+    • App ready: ~1-2 min total
+
+Subsequent runs:
+    • Backend: 2-3 sec
+    • Frontend: 5-10 sec
+    • App ready: ~10-15 sec total
+
+Plot generation:
+    • Heatmap: 3-5 sec
+    • Distribution: 3-5 sec
+    • Scatter: 3-5 sec
+    • Pair plot: 5-10 sec (slower!)
+    • Violin: 3-5 sec
+
+═══════════════════════════════════════════════════════════════════════════════
+                        🆘 IF SOMETHING GOES WRONG
+═══════════════════════════════════════════════════════════════════════════════
+
+Port Already in Use:
+    Error: "Address already in use :5000" or ":5173"
+    Fix: taskkill /PID [pid] /F
+         Then restart
+
+Backend Won't Start:
+    Error: "No module named 'flask'"
+    Fix: cd backend && pip install -r requirements.txt
+
+Frontend Won't Load:
+    Error: "npm ERR!"
+    Fix: npm install
+
+Plots Not Showing:
+    Check: Is backend running? http://localhost:5000/health
+    Check: Does .env have VITE_BACKEND_URL=http://localhost:5000?
+    Fix: Restart both services
+
+AI Not Responding:
+    Check: .env has VITE_GEMINI_API_KEY=AIzaSy...
+    Fix: Verify API key is correct
+
+═══════════════════════════════════════════════════════════════════════════════
+                        📚 HELP DOCUMENTS
+═══════════════════════════════════════════════════════════════════════════════
+
+For detailed testing:        LOCAL_TESTING.md
+For troubleshooting:         FULL_STACK_DEPLOYMENT.md
+For all documentation:       INDEX.md
+For quick reference:         This file
+
+═══════════════════════════════════════════════════════════════════════════════
+                        🎯 TEST WORKFLOW
+═══════════════════════════════════════════════════════════════════════════════
+
+1. Run: .\test-local.bat
+
+2. Wait for:
+   • Backend: "Running on http://..."
+   • Frontend: "Local: http://localhost:5173"
+
+3. Browser opens automatically
+
+4. Test these in order:
+   a) Upload sample_data.csv
+   b) Check Report Canvas (charts appear)
+   c) Check Data Matrix (data table appears)
+   d) Go to Seaborn Stats tab
+   e) Click each plot button
+   f) Verify plots generate
+   g) Try AI Chat
+
+5. If all work → Ready for Vercel!
+
+═══════════════════════════════════════════════════════════════════════════════
+                        💡 PRO TIPS
+═══════════════════════════════════════════════════════════════════════════════
+
+• Use sample_data.csv first (it's small, tests fast)
+• Heatmap is fastest - start with that
+• Pair plot is slowest - test last
+• Check browser console (F12) for frontend errors
+• Check terminal where Flask runs for backend errors
+• Keep both windows open while testing
+• Use Ctrl+C to stop each service
+
+═══════════════════════════════════════════════════════════════════════════════
+                        ✨ READY TO TEST?
+═══════════════════════════════════════════════════════════════════════════════
+
+Just run:
+
+    .\test-local.bat
+
+And the magic happens! 🚀
+
+═══════════════════════════════════════════════════════════════════════════════
