@@ -10,12 +10,14 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
   const [selectedPlot, setSelectedPlot] = useState<string>('heatmap');
   const [plots, setPlots] = useState<Record<string, string>>({});
   const [loading, setLoading] = useState<boolean>(false);
+  const [error, setError] = useState<string>('');
   const [selectedX, setSelectedX] = useState<string>('');
   const [selectedY, setSelectedY] = useState<string>('');
 
-  const API_BASE = import.meta.env.VITE_BACKEND_URL || 'http://localhost:5000';
+  const API_BASE = (import.meta.env?.VITE_BACKEND_URL as string) || 'http://127.0.0.1:5000';
 
   const numericColumns = schema?.stats?.numeric_columns || [];
+  const categoricalColumns = schema?.stats?.categorical_columns || [];
 
   useEffect(() => {
     if (selectedPlot && !plots[selectedPlot]) {
@@ -25,44 +27,48 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
 
   const generatePlot = async (plotType: string) => {
     if (!data || data.length === 0) {
-      alert('No data available');
+      setError('No data available. Please upload a CSV file first.');
       return;
     }
 
     setLoading(true);
+    setError('');
     try {
       let endpoint = '';
-      let payload = { data };
+      let payload: any = { data };
 
       switch (plotType) {
         case 'heatmap':
           endpoint = '/api/plots/heatmap';
           break;
         case 'distribution':
+          if (!selectedX && numericColumns.length === 0) {
+            throw new Error('No numeric columns available for distribution plot');
+          }
           endpoint = '/api/plots/distribution';
-          payload = { ...payload, column: selectedX || numericColumns[0] };
+          payload.column = selectedX || numericColumns[0];
           break;
         case 'scatter':
+          if (numericColumns.length < 2) {
+            throw new Error('Need at least 2 numeric columns for scatter plot');
+          }
           endpoint = '/api/plots/scatter';
-          payload = {
-            ...payload,
-            x: selectedX || numericColumns[0],
-            y: selectedY || numericColumns[1],
-          };
+          payload.x = selectedX || numericColumns[0];
+          payload.y = selectedY || numericColumns[1];
           break;
         case 'pairplot':
           endpoint = '/api/plots/pairplot';
           break;
         case 'violin':
+          if (numericColumns.length === 0) {
+            throw new Error('No numeric columns available for violin plot');
+          }
           endpoint = '/api/plots/violin';
-          payload = {
-            ...payload,
-            x: selectedX || schema?.stats?.categorical_columns[0] || 'category',
-            y: selectedY || numericColumns[0],
-          };
+          payload.x = selectedX || categoricalColumns[0] || 'category';
+          payload.y = selectedY || numericColumns[0];
           break;
         default:
-          return;
+          throw new Error('Unknown plot type');
       }
 
       const response = await fetch(`${API_BASE}${endpoint}`, {
@@ -71,13 +77,20 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
         body: JSON.stringify(payload),
       });
 
-      if (!response.ok) throw new Error('Failed to generate plot');
+      if (!response.ok) {
+        const errorData = await response.json();
+        throw new Error(errorData.error || `HTTP ${response.status}: Failed to generate plot`);
+      }
 
       const result = await response.json();
+      if (!result.plot) {
+        throw new Error('No plot data received from server');
+      }
       setPlots(prev => ({ ...prev, [plotType]: `data:image/png;base64,${result.plot}` }));
     } catch (error) {
-      console.error('Plot generation error:', error);
-      alert('Failed to generate plot');
+      const errorMsg = error instanceof Error ? error.message : 'Unknown error occurred';
+      console.error('Plot generation error:', errorMsg);
+      setError(`Failed to generate plot: ${errorMsg}`);
     } finally {
       setLoading(false);
     }
@@ -114,33 +127,41 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
 
       {/* Column Selectors */}
       <div className="column-selectors">
-        {(selectedPlot === 'distribution' || selectedPlot === 'scatter' || selectedPlot === 'violin') && (
-          <>
-            {(selectedPlot === 'distribution' || selectedPlot === 'scatter' || selectedPlot === 'violin') && (
-              <select
-                value={selectedX}
-                onChange={e => setSelectedX(e.target.value)}
-                className="selector-input"
-              >
-                <option value="">Select X Column</option>
-                {numericColumns.map(col => (
-                  <option key={col} value={col}>{col}</option>
-                ))}
-              </select>
-            )}
-            {(selectedPlot === 'scatter' || selectedPlot === 'violin') && (
-              <select
-                value={selectedY}
-                onChange={e => setSelectedY(e.target.value)}
-                className="selector-input"
-              >
-                <option value="">Select Y Column</option>
-                {numericColumns.map(col => (
-                  <option key={col} value={col}>{col}</option>
-                ))}
-              </select>
-            )}
-          </>
+        {(selectedPlot === 'distribution' || selectedPlot === 'scatter') && (
+          <select
+            value={selectedX}
+            onChange={e => setSelectedX(e.target.value)}
+            className="selector-input"
+          >
+            <option value="">Select X Column</option>
+            {numericColumns.map(col => (
+              <option key={col} value={col}>{col}</option>
+            ))}
+          </select>
+        )}
+        {selectedPlot === 'violin' && (
+          <select
+            value={selectedX}
+            onChange={e => setSelectedX(e.target.value)}
+            className="selector-input"
+          >
+            <option value="">Select Category Column</option>
+            {categoricalColumns.map(col => (
+              <option key={col} value={col}>{col}</option>
+            ))}
+          </select>
+        )}
+        {(selectedPlot === 'scatter' || selectedPlot === 'violin') && (
+          <select
+            value={selectedY}
+            onChange={e => setSelectedY(e.target.value)}
+            className="selector-input"
+          >
+            <option value="">Select Y Column</option>
+            {numericColumns.map(col => (
+              <option key={col} value={col}>{col}</option>
+            ))}
+          </select>
         )}
         <button
           onClick={() => generatePlot(selectedPlot)}
@@ -150,6 +171,21 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
           {loading ? 'Generating...' : 'Generate Plot'}
         </button>
       </div>
+
+      {/* Error Display */}
+      {error && (
+        <div style={{
+          background: '#fee',
+          border: '1px solid #f88',
+          color: '#c00',
+          padding: '12px',
+          borderRadius: '6px',
+          marginBottom: '15px',
+          fontSize: '14px'
+        }}>
+          {error}
+        </div>
+      )}
 
       {/* Plot Display */}
       <div className="plot-container">
