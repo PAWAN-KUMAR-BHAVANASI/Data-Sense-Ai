@@ -8,6 +8,7 @@ import {
   HelpCircle, MoreHorizontal, Search
 } from 'lucide-react';
 import { ChartRenderer } from './ChartRenderer';
+import { SeabornDashboard } from './SeabornDashboard';
 
 interface DashboardProps {
   data: DataRow[];
@@ -20,7 +21,7 @@ interface DashboardProps {
 }
 
 export const Dashboard: React.FC<DashboardProps> = ({ data, schema, onSwitchToChat, triggerChatQuery, savedInsights, onRemoveInsight, palette }) => {
-  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'explorer'>('overview');
+  const [activeSubTab, setActiveSubTab] = useState<'overview' | 'explorer' | 'seaborn'>('overview');
   const [selectedRowIndex, setSelectedRowIndex] = useState<number | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [sortConfig, setSortConfig] = useState<{ key: string; direction: 'asc' | 'desc' } | null>(null);
@@ -172,7 +173,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, schema, onSwitchToCh
       )}
 
       {/* Tabs */}
-      <div className="flex bg-slate-200/50 p-1.5 rounded-[20px] w-fit">
+      <div className="flex bg-slate-200/50 p-1.5 rounded-[20px] w-fit flex-wrap">
         <button 
           onClick={() => setActiveSubTab('overview')}
           className={`px-6 py-2.5 rounded-[14px] text-sm font-black transition-all flex items-center gap-2 ${activeSubTab === 'overview' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
@@ -184,6 +185,12 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, schema, onSwitchToCh
           className={`px-6 py-2.5 rounded-[14px] text-sm font-black transition-all flex items-center gap-2 ${activeSubTab === 'explorer' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
         >
           <TableIcon className="w-4 h-4" /> Data Matrix
+        </button>
+        <button 
+          onClick={() => setActiveSubTab('seaborn')}
+          className={`px-6 py-2.5 rounded-[14px] text-sm font-black transition-all flex items-center gap-2 ${activeSubTab === 'seaborn' ? 'bg-white text-indigo-600 shadow-sm' : 'text-slate-500 hover:text-slate-700'}`}
+        >
+          <BarChart3 className="w-4 h-4" /> Seaborn Stats
         </button>
       </div>
 
@@ -415,7 +422,11 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, schema, onSwitchToCh
             </table>
           </div>
         </div>
-      )}
+      ) : activeSubTab === 'seaborn' ? (
+        <div className="animate-in fade-in duration-500">
+          <SeabornDashboard data={filteredData} schema={schema} />
+        </div>
+      ) : null}
     </div>
   );
 };

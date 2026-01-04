@@ -2,8 +2,14 @@
 import { GoogleGenAI, Type } from "@google/genai";
 import { SchemaInfo, AnalysisResponse, DataRow, DataQualityReport, StatisticalSummary } from "../types";
 
-// Always use the specific initialization pattern from guidelines
-const ai = new GoogleGenAI({ apiKey: process.env.API_KEY });
+// Use Vite environment variables for browser compatibility
+const API_KEY = import.meta.env.VITE_GEMINI_API_KEY || process.env.VITE_GEMINI_API_KEY;
+
+if (!API_KEY) {
+  console.warn("⚠️ VITE_GEMINI_API_KEY not configured. AI features will not work.");
+}
+
+const ai = new GoogleGenAI({ apiKey: API_KEY || "" });
 
 export async function analyzeDataQuery(
   userQuery: string,
