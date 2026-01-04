@@ -364,7 +364,7 @@ export const Dashboard: React.FC<DashboardProps> = ({ data, schema, onSwitchToCh
             </div>
           </div>
         </div>
-      ) : (
+      ) : activeSubTab === 'explorer' ? (
         /* Data Explorer Sub-View (Power BI Matrix Table Style) */
         <div className="bg-white rounded-[48px] border border-slate-100 shadow-sm overflow-hidden flex flex-col min-h-[600px] animate-in slide-in-from-bottom duration-500">
           <div className="px-10 py-8 border-b border-slate-50 flex flex-col md:flex-row md:items-center justify-between gap-6">
