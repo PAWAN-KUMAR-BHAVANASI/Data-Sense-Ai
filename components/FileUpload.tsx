@@ -7,9 +7,10 @@ import { calculateDataHealth, calculateStats } from '../services/geminiService';
 
 interface FileUploadProps {
   onDataLoaded: (data: DataRow[], schema: SchemaInfo) => void;
+  isDarkMode?: boolean;
 }
 
-export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded }) => {
+export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded, isDarkMode = false }) => {
   const [isDragging, setIsDragging] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
@@ -87,16 +88,17 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded }) => {
         <div className="inline-flex items-center gap-2 px-4 py-1.5 bg-blue-50 text-blue-700 rounded-full text-[10px] font-black uppercase tracking-[0.2em] mb-2 border border-blue-100">
           Neural Ingest System
         </div>
-        <h2 className="text-5xl font-[900] text-slate-900 tracking-tight leading-tight">Sync Your <span className="sense-text-gradient">Intelligence.</span></h2>
-        <p className="text-slate-500 max-w-xl mx-auto text-xl font-medium leading-relaxed">Drop your structured records into our neural engine to begin automated cleaning, profiling, and insight generation.</p>
+        <h2 className={`text-5xl font-[900] tracking-tight leading-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Sync Your <span className="sense-text-gradient">Intelligence.</span></h2>
+        <p className={`${isDarkMode ? 'text-slate-400' : 'text-slate-500'} max-w-xl mx-auto text-xl font-medium leading-relaxed`}>Drop your structured records into our neural engine to begin automated cleaning, profiling, and insight generation.</p>
       </div>
 
       <label
         onDragOver={(e) => { e.preventDefault(); setIsDragging(true); }}
         onDragLeave={() => setIsDragging(false)}
         onDrop={onDrop}
-        className={`relative w-full border-[3px] border-dashed rounded-[60px] transition-all duration-500 flex flex-col items-center justify-center cursor-pointer group bg-white shadow-2xl shadow-slate-200/50 overflow-hidden py-24
-          ${isDragging ? 'border-blue-500 bg-blue-50/20 scale-[1.02]' : 'border-slate-200 hover:border-blue-400 hover:bg-slate-50/30'}
+        className={`relative w-full border-[3px] border-dashed rounded-[60px] transition-all duration-500 flex flex-col items-center justify-center cursor-pointer group overflow-hidden py-24
+          ${isDarkMode ? 'bg-gray-900 border-gray-700 shadow-slate-900/50' : 'bg-white shadow-2xl shadow-slate-200/50'}
+          ${isDragging ? (isDarkMode ? 'border-blue-500 bg-blue-950/30 scale-[1.02]' : 'border-blue-500 bg-blue-50/20 scale-[1.02]') : (isDarkMode ? 'border-gray-700 hover:border-blue-600 hover:bg-gray-800/40' : 'border-slate-200 hover:border-blue-400 hover:bg-slate-50/30')}
           ${loading ? 'pointer-events-none' : ''}
         `}
       >
@@ -109,17 +111,17 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded }) => {
               <Loader2 className="w-24 h-24 text-blue-600 animate-spin relative z-10" />
             </div>
             <div className="space-y-2 text-center">
-              <p className="text-2xl font-black text-slate-900 tracking-tight">Processing Lifecycle</p>
-              <p className="text-slate-400 font-bold uppercase tracking-widest text-xs">Step 2: Cleaning & Validation...</p>
+              <p className={`text-2xl font-black tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Processing Lifecycle</p>
+              <p className={`${isDarkMode ? 'text-slate-400' : 'text-slate-400'} font-bold uppercase tracking-widest text-xs`}>Step 2: Cleaning & Validation...</p>
             </div>
           </div>
         ) : (
           <div className="flex flex-col items-center text-center px-12">
-            <div className={`w-32 h-32 rounded-[40px] mb-10 transition-all transform group-hover:scale-110 group-hover:-rotate-3 flex items-center justify-center shadow-2xl ${isDragging ? 'sense-gradient rotate-6' : 'bg-slate-900'}`}>
+            <div className={`w-32 h-32 rounded-[40px] mb-10 transition-all transform group-hover:scale-110 group-hover:-rotate-3 flex items-center justify-center ${isDarkMode ? '' : 'shadow-2xl'} ${isDragging ? 'sense-gradient rotate-6' : (isDarkMode ? 'bg-slate-800' : 'bg-slate-900')}`}>
               <Logo className="w-20 h-20" />
             </div>
-            <p className="text-3xl font-[900] text-slate-900 tracking-tight">Deploy CSV Files</p>
-            <p className="text-slate-400 mt-4 font-bold text-lg">Click to browse or drag records here</p>
+              <p className={`text-3xl font-[900] tracking-tight ${isDarkMode ? 'text-white' : 'text-slate-900'}`}>Deploy CSV Files</p>
+              <p className={`${isDarkMode ? 'text-slate-400' : 'text-slate-400'} mt-4 font-bold text-lg`}>Click to browse or drag records here</p>
             
             <div className="mt-10 flex items-center gap-6">
               <div className="flex -space-x-3">
@@ -129,7 +131,7 @@ export const FileUpload: React.FC<FileUploadProps> = ({ onDataLoaded }) => {
                   </div>
                 ))}
               </div>
-              <p className="text-sm font-bold text-slate-400">Trusted by data teams worldwide</p>
+              <p className={`${isDarkMode ? 'text-slate-400' : 'text-slate-400'} text-sm font-bold`}>Trusted by data teams worldwide</p>
             </div>
           </div>
         )}

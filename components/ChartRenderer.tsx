@@ -13,13 +13,16 @@ interface ChartRendererProps {
   yAxis: string;
   palette: ColorPalette;
   onItemClick?: (data: any) => void;
+  isDarkMode?: boolean;
 }
 
-export const ChartRenderer: React.FC<ChartRendererProps> = ({ type, data, xAxis, yAxis, palette, onItemClick }) => {
+export const ChartRenderer: React.FC<ChartRendererProps> = ({ type, data, xAxis, yAxis, palette, onItemClick, isDarkMode = false }) => {
   if (type === 'none' || !data.length) return null;
 
   const mainColor = palette.colors[0];
   const colors = palette.colors;
+  const axisTickColor = isDarkMode ? '#9ca3af' : '#334155';
+  const gridStroke = isDarkMode ? '#374151' : '#f1f5f9';
 
   const commonProps = {
     data,
@@ -32,19 +35,19 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ type, data, xAxis,
   };
 
   const renderTooltip = () => (
-    <Tooltip 
-      contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: '0 10px 25px -5px rgba(0,0,0,0.1)', padding: '12px' }}
-      itemStyle={{ fontWeight: 600, color: '#1e293b', fontSize: '12px' }}
-      cursor={{ fill: 'rgba(0,0,0,0.02)' }}
+      <Tooltip 
+      contentStyle={{ borderRadius: '16px', border: 'none', boxShadow: isDarkMode ? '0 10px 25px -5px rgba(0,0,0,0.6)' : '0 10px 25px -5px rgba(0,0,0,0.1)', padding: '12px', background: isDarkMode ? '#0b1220' : '#fff' }}
+      itemStyle={{ fontWeight: 600, color: isDarkMode ? '#e6eef8' : '#1e293b', fontSize: '12px' }}
+      cursor={{ fill: isDarkMode ? 'rgba(255,255,255,0.02)' : 'rgba(0,0,0,0.02)' }}
     />
   );
 
   const renderStandardXAxis = () => (
-    <XAxis 
+      <XAxis 
       dataKey="name" 
       axisLine={false} 
       tickLine={false} 
-      tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 700 }} 
+      tick={{ fill: axisTickColor, fontSize: 10, fontWeight: 700 }} 
       dy={10} 
       interval="preserveStartEnd"
     />
@@ -54,7 +57,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ type, data, xAxis,
     <YAxis 
       axisLine={false} 
       tickLine={false} 
-      tick={{ fill: '#94a3b8', fontSize: 10, fontWeight: 700 }} 
+      tick={{ fill: axisTickColor, fontSize: 10, fontWeight: 700 }} 
     />
   );
 
@@ -65,7 +68,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ type, data, xAxis,
           case 'bar':
             return (
               <BarChart {...commonProps}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                 {renderStandardXAxis()}
                 {renderStandardYAxis()}
                 {renderTooltip()}
@@ -81,13 +84,13 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ type, data, xAxis,
           case 'histogram':
             return (
               <BarChart {...commonProps} barCategoryGap={1}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                 {renderStandardXAxis()}
                 <YAxis 
                   axisLine={false} 
                   tickLine={false} 
-                  tick={{ fill: '#94a3b8', fontSize: 10 }}
-                  label={{ value: 'Freq', angle: -90, position: 'insideLeft', fill: '#94a3b8', fontSize: 9, fontWeight: 800 }}
+                  tick={{ fill: axisTickColor, fontSize: 10 }}
+                  label={{ value: 'Freq', angle: -90, position: 'insideLeft', fill: axisTickColor, fontSize: 9, fontWeight: 800 }}
                 />
                 {renderTooltip()}
                 <Bar 
@@ -101,7 +104,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ type, data, xAxis,
           case 'line':
             return (
               <LineChart {...commonProps}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                 {renderStandardXAxis()}
                 {renderStandardYAxis()}
                 {renderTooltip()}
@@ -124,7 +127,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ type, data, xAxis,
                     <stop offset="95%" stopColor={mainColor} stopOpacity={0}/>
                   </linearGradient>
                 </defs>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                 {renderStandardXAxis()}
                 {renderStandardYAxis()}
                 {renderTooltip()}
@@ -167,7 +170,7 @@ export const ChartRenderer: React.FC<ChartRendererProps> = ({ type, data, xAxis,
           case 'scatter':
             return (
               <ScatterChart {...commonProps}>
-                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke="#f1f5f9" />
+                <CartesianGrid strokeDasharray="3 3" vertical={false} stroke={gridStroke} />
                 {renderStandardXAxis()}
                 {renderStandardYAxis()}
                 {renderTooltip()}

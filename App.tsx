@@ -68,7 +68,7 @@ const App: React.FC = () => {
   }, []);
 
   return (
-    <div className={`flex h-screen ${isDarkMode ? 'dark bg-slate-950' : 'bg-[#f8fafc]'} overflow-hidden transition-colors duration-200`}>
+    <div className={`flex h-screen ${isDarkMode ? 'dark bg-gray-950' : 'bg-[#f8fafc]'} overflow-hidden transition-colors duration-200`}>
       <Sidebar 
         activeTab={activeTab} 
         setActiveTab={setActiveTab} 
@@ -79,7 +79,7 @@ const App: React.FC = () => {
       />
 
       <main className="flex-1 flex flex-col overflow-hidden">
-        <header className={`h-20 border-b ${isDarkMode ? 'border-slate-700/50 bg-slate-900/80' : 'border-slate-200/60 bg-white/80'} backdrop-blur-md flex items-center justify-between px-10 shrink-0 z-20 transition-colors duration-200`}>
+        <header className={`h-20 border-b ${isDarkMode ? 'border-gray-800 bg-gray-950/95' : 'border-slate-200/60 bg-white/80'} backdrop-blur-md flex items-center justify-between px-10 shrink-0 z-20 transition-colors duration-200`}>
           <div className="flex items-center gap-4 group cursor-pointer" onClick={() => setActiveTab('upload')}>
             <Logo className="w-12 h-12 transition-transform duration-500 group-hover:scale-110" />
             <div>
@@ -89,13 +89,13 @@ const App: React.FC = () => {
           </div>
           <div className="flex items-center gap-6">
              {schema && (
-               <div className={`px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border shadow-sm transition-colors ${isDarkMode ? 'bg-blue-900/30 text-blue-300 border-blue-700/50' : 'bg-blue-50 text-blue-700 border-blue-100/50'}`}>
+               <div className={`px-4 py-1.5 rounded-full text-xs font-bold flex items-center gap-2 border shadow-sm transition-colors ${isDarkMode ? 'bg-blue-950 text-blue-300 border-blue-700' : 'bg-blue-50 text-blue-700 border-blue-100/50'}`}>
                  <div className="w-1.5 h-1.5 bg-blue-500 rounded-full animate-pulse"></div>
                  {schema.totalRows.toLocaleString()} Records Active
                </div>
              )}
              
-             <div className={`h-6 w-px ${isDarkMode ? 'bg-slate-700' : 'bg-slate-200'}`}></div>
+             <div className={`h-6 w-px ${isDarkMode ? 'bg-gray-700' : 'bg-slate-200'}`}></div>
 
              <button
                onClick={() => setIsDarkMode(!isDarkMode)}
@@ -134,16 +134,16 @@ const App: React.FC = () => {
                )}
              </div>
 
-             <button className={`p-2.5 rounded-xl transition-all border border-transparent ${isDarkMode ? 'hover:bg-slate-800 text-slate-400 hover:text-slate-300 hover:border-slate-700' : 'hover:bg-slate-50 text-slate-400 hover:text-slate-600 hover:border-slate-100'}`}>
+             <button className={`p-2.5 rounded-xl transition-all border border-transparent ${isDarkMode ? 'hover:bg-gray-800 text-gray-400 hover:text-gray-300 hover:border-gray-700' : 'hover:bg-slate-50 text-slate-400 hover:text-slate-600 hover:border-slate-100'}`}>
                 <Settings className="w-5 h-5" />
              </button>
           </div>
         </header>
 
-        <div className={`flex-1 overflow-y-auto ${isDarkMode ? 'bg-slate-900' : 'bg-[#f8fafc]'} transition-colors duration-200`}>
+        <div className={`flex-1 overflow-y-auto ${isDarkMode ? 'bg-gray-900' : 'bg-[#f8fafc]'} transition-colors duration-200`}>
           <div className="max-w-[1600px] mx-auto h-full p-8 md:p-12">
             {activeTab === 'upload' && !data && (
-              <FileUpload onDataLoaded={handleDataLoaded} />
+              <FileUpload onDataLoaded={handleDataLoaded} isDarkMode={isDarkMode} />
             )}
 
             {activeTab === 'dashboard' && data && schema && (

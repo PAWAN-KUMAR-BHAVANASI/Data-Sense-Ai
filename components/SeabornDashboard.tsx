@@ -37,6 +37,8 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
     try {
       let endpoint = '';
       let payload: any = { data };
+    // Inform backend whether dark mode is active so plots can match UI
+    payload.dark = isDarkMode;
 
       switch (plotType) {
         case 'heatmap':
@@ -106,10 +108,10 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
   ];
 
   return (
-    <div className="seaborn-dashboard">
+    <div className={`seaborn-dashboard ${isDarkMode ? 'dark-mode' : ''}`}>
       <div className="dashboard-header">
         <h2>📊 Seaborn Analysis Dashboard</h2>
-        <p className="text-gray-600">Advanced Statistical Visualizations</p>
+        <p className={isDarkMode ? 'text-gray-300' : 'text-gray-600'}>Advanced Statistical Visualizations</p>
       </div>
 
       {/* Plot Type Selector */}
@@ -118,7 +120,7 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
           <button
             key={tab.id}
             onClick={() => setSelectedPlot(tab.id)}
-            className={`tab-button ${selectedPlot === tab.id ? 'active' : ''}`}
+            className={`tab-button ${selectedPlot === tab.id ? 'active' : ''} ${isDarkMode ? 'dark' : ''}`}
           >
             {tab.icon}
             {tab.label}
@@ -132,7 +134,7 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
           <select
             value={selectedX}
             onChange={e => setSelectedX(e.target.value)}
-            className="selector-input"
+            className={`selector-input ${isDarkMode ? 'dark' : ''}`}
           >
             <option value="">Select X Column</option>
             {numericColumns.map(col => (
@@ -144,7 +146,7 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
           <select
             value={selectedX}
             onChange={e => setSelectedX(e.target.value)}
-            className="selector-input"
+            className={`selector-input ${isDarkMode ? 'dark' : ''}`}
           >
             <option value="">Select Category Column</option>
             {categoricalColumns.map(col => (
@@ -156,7 +158,7 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
           <select
             value={selectedY}
             onChange={e => setSelectedY(e.target.value)}
-            className="selector-input"
+            className={`selector-input ${isDarkMode ? 'dark' : ''}`}
           >
             <option value="">Select Y Column</option>
             {numericColumns.map(col => (
@@ -167,7 +169,7 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
         <button
           onClick={() => generatePlot(selectedPlot)}
           disabled={loading}
-          className="refresh-button"
+          className={`refresh-button ${isDarkMode ? 'dark' : ''}`}
         >
           {loading ? 'Generating...' : 'Generate Plot'}
         </button>
@@ -175,21 +177,13 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
 
       {/* Error Display */}
       {error && (
-        <div style={{
-          background: '#fee',
-          border: '1px solid #f88',
-          color: '#c00',
-          padding: '12px',
-          borderRadius: '6px',
-          marginBottom: '15px',
-          fontSize: '14px'
-        }}>
-          {error}
+        <div className={isDarkMode ? 'error-display dark' : 'error-display'}>
+          <strong>Error:</strong> {error}
         </div>
       )}
 
       {/* Plot Display */}
-      <div className="plot-container">
+      <div className={`plot-container ${isDarkMode ? 'dark' : ''}`}>
         {plots[selectedPlot] ? (
           <img
             src={plots[selectedPlot]}
@@ -197,7 +191,7 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
             className="plot-image"
           />
         ) : loading ? (
-          <div className="loading">Loading plot...</div>
+          <div className={`loading ${isDarkMode ? 'dark' : ''}`}>Loading plot...</div>
         ) : (
           <div className="no-plot">
             Click "Generate Plot" to create visualization
@@ -207,30 +201,38 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
 
       <style>{`
         .seaborn-dashboard {
-          padding: 20px;
+          padding: 24px;
           background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-          border-radius: 12px;
+          border-radius: 16px;
           color: white;
+          box-shadow: 0 10px 40px rgba(0,0,0,0.1);
+        }
+
+        .seaborn-dashboard.dark-mode {
+          background: linear-gradient(135deg, #1a1a2e 0%, #16213e 100%);
+          border: 1px solid #2d3561;
         }
 
         .dashboard-header {
-          margin-bottom: 20px;
+          margin-bottom: 24px;
         }
 
         .dashboard-header h2 {
-          font-size: 24px;
+          font-size: 26px;
           margin: 0 0 8px 0;
           font-weight: bold;
+          color: white;
         }
 
         .dashboard-header p {
           margin: 0;
           opacity: 0.9;
+          font-size: 14px;
         }
 
         .plot-tabs {
           display: flex;
-          gap: 10px;
+          gap: 12px;
           margin-bottom: 20px;
           flex-wrap: wrap;
         }
@@ -239,59 +241,98 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
           display: flex;
           align-items: center;
           gap: 6px;
-          padding: 10px 16px;
+          padding: 12px 18px;
           background: rgba(255, 255, 255, 0.2);
           border: 2px solid transparent;
-          border-radius: 8px;
+          border-radius: 10px;
           color: white;
           cursor: pointer;
-          transition: all 0.3s;
-          font-weight: 500;
+          transition: all 0.3s ease;
+          font-weight: 600;
+          font-size: 14px;
         }
 
         .tab-button:hover {
-          background: rgba(255, 255, 255, 0.3);
+          background: rgba(255, 255, 255, 0.35);
+          transform: translateY(-2px);
         }
 
         .tab-button.active {
           background: white;
           color: #667eea;
           border-color: white;
+          box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+        }
+
+        .tab-button.dark {
+          background: rgba(255, 255, 255, 0.08);
+          border-color: rgba(255, 255, 255, 0.15);
+        }
+
+        .tab-button.dark:hover {
+          background: rgba(255, 255, 255, 0.15);
+          border-color: rgba(255, 255, 255, 0.3);
+        }
+
+        .tab-button.dark.active {
+          background: #2d3561;
+          color: #60a5fa;
+          border-color: #60a5fa;
         }
 
         .column-selectors {
           display: flex;
-          gap: 10px;
+          gap: 12px;
           margin-bottom: 20px;
           flex-wrap: wrap;
+          align-items: center;
         }
 
         .selector-input {
-          padding: 10px 12px;
+          padding: 11px 14px;
           border: none;
-          border-radius: 6px;
+          border-radius: 8px;
           background: white;
           color: #333;
           font-size: 14px;
           cursor: pointer;
           flex: 1;
-          min-width: 150px;
+          min-width: 160px;
+          transition: all 0.3s ease;
+          font-weight: 500;
+        }
+
+        .selector-input:hover {
+          box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .selector-input.dark {
+          background: #2d3561;
+          color: #e5e7eb;
+          border: 1px solid #475569;
+        }
+
+        .selector-input.dark:hover {
+          border-color: #60a5fa;
+          box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.1);
         }
 
         .refresh-button {
-          padding: 10px 20px;
+          padding: 11px 24px;
           background: white;
           color: #667eea;
           border: none;
-          border-radius: 6px;
+          border-radius: 8px;
           font-weight: bold;
           cursor: pointer;
-          transition: all 0.3s;
+          transition: all 0.3s ease;
+          font-size: 14px;
         }
 
         .refresh-button:hover:not(:disabled) {
-          transform: scale(1.05);
-          box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+          transform: translateY(-2px);
+          box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2);
+          color: #764ba2;
         }
 
         .refresh-button:disabled {
@@ -299,19 +340,57 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
           cursor: not-allowed;
         }
 
+        .refresh-button.dark {
+          background: #2d3561;
+          color: #60a5fa;
+          border: 1px solid #475569;
+        }
+
+        .refresh-button.dark:hover:not(:disabled) {
+          background: #3d4671;
+          border-color: #60a5fa;
+          box-shadow: 0 0 16px rgba(96, 165, 250, 0.3);
+          transform: translateY(-2px);
+        }
+
+        .error-display {
+          background: #fecaca;
+          border: 2px solid #f87171;
+          color: #7f1d1d;
+          padding: 14px 16px;
+          border-radius: 10px;
+          margin-bottom: 16px;
+          font-size: 14px;
+          font-weight: 500;
+        }
+
+        .error-display.dark {
+          background: #7f2f2f;
+          border-color: #f87171;
+          color: #fecaca;
+        }
+
         .plot-container {
           background: white;
-          border-radius: 12px;
-          padding: 20px;
-          min-height: 400px;
+          border-radius: 14px;
+          padding: 24px;
+          min-height: 450px;
           display: flex;
           align-items: center;
           justify-content: center;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .plot-container.dark {
+          background: #1f2937;
+          border: 1px solid #374151;
+          box-shadow: 0 8px 24px rgba(0,0,0,0.3);
         }
 
         .plot-image {
           max-width: 100%;
           height: auto;
+          border-radius: 10px;
         }
 
         .loading {
@@ -320,9 +399,17 @@ export const SeabornDashboard: React.FC<SeabornDashboardProps> = ({ data, schema
           font-weight: bold;
         }
 
+        .loading.dark {
+          color: #60a5fa;
+        }
+
         .no-plot {
           color: #999;
           font-size: 16px;
+        }
+
+        .seaborn-dashboard.dark-mode .no-plot {
+          color: #9ca3af;
         }
       `}</style>
     </div>

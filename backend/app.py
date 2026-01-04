@@ -24,6 +24,18 @@ plt.switch_backend('Agg')
 sns.set_theme(style="whitegrid")
 sns.set_palette("husl")
 
+
+def apply_theme(dark: bool = False):
+    """Apply plotting theme based on dark flag."""
+    if dark:
+        sns.set_theme(style="darkgrid")
+        plt.style.use('dark_background')
+        plt.rcParams.update({'figure.facecolor': '#0f1724', 'axes.facecolor': '#0f1724', 'savefig.facecolor': '#0f1724'})
+    else:
+        sns.set_theme(style="whitegrid")
+        plt.style.use('default')
+        plt.rcParams.update({'figure.facecolor': 'white', 'axes.facecolor': 'white', 'savefig.facecolor': 'white'})
+
 @app.route('/health', methods=['GET'])
 def health():
     """Health check endpoint"""
@@ -79,6 +91,7 @@ def generate_heatmap():
     """Generate correlation heatmap"""
     try:
         data = request.get_json()
+        apply_theme(data.get('dark', False))
         
         # Parse data into DataFrame
         df = pd.DataFrame(data['data'])
@@ -115,6 +128,7 @@ def generate_distribution():
     """Generate distribution plots"""
     try:
         data = request.get_json()
+        apply_theme(data.get('dark', False))
         df = pd.DataFrame(data['data'])
         column = data.get('column')
         
@@ -149,6 +163,7 @@ def generate_scatter():
     """Generate scatter plot with regression line"""
     try:
         data = request.get_json()
+        apply_theme(data.get('dark', False))
         df = pd.DataFrame(data['data'])
         x_col = data.get('x')
         y_col = data.get('y')
@@ -197,6 +212,7 @@ def generate_pairplot():
     """Generate pair plot for numeric columns"""
     try:
         data = request.get_json()
+        apply_theme(data.get('dark', False))
         df = pd.DataFrame(data['data'])
         
         numeric_cols = df.select_dtypes(include=[np.number]).columns.tolist()
@@ -206,16 +222,16 @@ def generate_pairplot():
         
         # Limit to first 4 columns for performance
         cols_to_plot = numeric_cols[:4]
-        
-        fig = sns.pairplot(
+
+        grid = sns.pairplot(
             df[cols_to_plot],
             diag_kind='kde',
             plot_kws={'s': 50, 'alpha': 0.6},
             diag_kws={'shade': True}
         )
-        
-        img_base64 = fig_to_base64(fig)
-        plt.close(fig)
+
+        img_base64 = fig_to_base64(grid)
+        plt.close(grid.fig)
         
         return jsonify({'plot': img_base64}), 200
     
@@ -227,6 +243,7 @@ def generate_violin():
     """Generate violin plot"""
     try:
         data = request.get_json()
+        apply_theme(data.get('dark', False))
         df = pd.DataFrame(data['data'])
         x_col = data.get('x')
         y_col = data.get('y')
@@ -281,8 +298,14 @@ def statistical_summary():
 
 def fig_to_base64(fig):
     """Convert matplotlib figure to base64 string"""
+    # Accept either a matplotlib.figure.Figure or a seaborn PairGrid
+    if hasattr(fig, 'fig'):
+        real_fig = fig.fig
+    else:
+        real_fig = fig
+
     img_buffer = io.BytesIO()
-    fig.savefig(img_buffer, format='png', dpi=100, bbox_inches='tight')
+    real_fig.savefig(img_buffer, format='png', dpi=100, bbox_inches='tight')
     img_buffer.seek(0)
     img_base64 = base64.b64encode(img_buffer.getvalue()).decode()
     img_buffer.close()
